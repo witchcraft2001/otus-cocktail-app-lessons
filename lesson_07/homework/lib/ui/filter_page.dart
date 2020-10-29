@@ -1,4 +1,3 @@
-
 // TODO: Сделать экран Фильтр по категории
 // Ссылка на макет: https://www.figma.com/file/Uzn5jHYiiFgacPCWNhwbc5/%D0%9A%D0%BE%D0%BA%D1%82%D0%B5%D0%B9%D0%BB%D0%B8-Copy?node-id=20%3A590
 
@@ -12,14 +11,39 @@
 // 8. Делаем fork от репозитория и сдаем через PR
 // 9. Помним про декомпозицию кода по методам и классам.
 
-
+import 'package:cocktail/core/models.dart';
 import 'package:cocktail/core/src/repository/async_cocktail_repository.dart';
 import 'package:flutter/material.dart';
 
 class CocktailsFilterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    return Column(
+      children: [
+        _buildSearchField(),
+        _buildCategoriesList(),
+        _buildCoctailsList()],
+    );
+  }
 
+  Widget _buildSearchField() {
     return Container();
   }
+
+  Widget _buildCategoriesList() {
+    return Expanded(
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: CocktailCategory.values.length,
+        itemBuilder: (context, index) {
+          return Text(CocktailCategory.values.elementAt(index).value);
+        },
+      ),
+    );
+  }
+
+  Widget _buildCoctailsList() {
+    return Container();
+  }
+
 }
