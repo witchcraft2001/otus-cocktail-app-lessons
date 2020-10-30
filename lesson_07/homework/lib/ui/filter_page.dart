@@ -20,9 +20,9 @@ class CocktailsFilterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Container(
-        color: Colors.black,
+    return Container(
+      color: Colors.black,
+      child: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [_buildSearchField(), _buildCategoriesList(), Expanded(child: _buildCocktailsList())],
@@ -67,7 +67,7 @@ class CocktailsFilterScreen extends StatelessWidget {
 
   Widget _buildCategoriesList() {
     return SizedBox(
-      height: 75,
+      height: 70,
       child: Container(
         padding: const EdgeInsets.only(bottom: 16.0),
         child: ListView.builder(
@@ -92,7 +92,7 @@ class CocktailsFilterScreen extends StatelessWidget {
               color: _category.value == category ? Color(0xFF3B3953) : Color(0xFF201F2C)),
           child: Center(
             child: Padding(
-              padding: const EdgeInsets.only(left: 18.0, right: 18.0, top: 14.0, bottom: 14.0),
+              padding: const EdgeInsets.only(left: 18.0, right: 18.0, top: 10.0, bottom: 10.0),
               child: Text(
                 category.value,
                 style: TextStyle(color: Colors.white, fontSize: 15.0, fontWeight: FontWeight.w400),
@@ -169,13 +169,16 @@ class CocktailsFilterScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Text(
-                    cocktail.name ?? '',
-                    textAlign: TextAlign.left,
-                    style: const TextStyle(
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Text(
+                      cocktail.name ?? '',
+                      textAlign: TextAlign.left,
+                      style: const TextStyle(
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                   Container(
