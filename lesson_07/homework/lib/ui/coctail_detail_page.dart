@@ -176,11 +176,13 @@ class CocktailDetailPage extends StatelessWidget {
       padding: const EdgeInsets.only(left: 32, right: 32, top: 8, bottom: 8),
       child: Row(
         children: [
-          Text(e.ingredientName,
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  decoration: TextDecoration.underline)),
+          Expanded(
+            child: Text(e.ingredientName,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    decoration: TextDecoration.underline)),
+          ),
           Spacer(flex: 1),
           Text(e.measure, style: TextStyle(color: Colors.white, fontSize: 14)),
         ],
