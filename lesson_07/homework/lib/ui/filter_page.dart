@@ -12,6 +12,7 @@
 // 9. Помним про декомпозицию кода по методам и классам.
 
 import 'package:cocktail/core/models.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -25,7 +26,11 @@ class CocktailsFilterScreen extends StatelessWidget {
       child: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
-          children: [_buildSearchField(), _buildCategoriesList(), Expanded(child: _buildCocktailsList())],
+          children: [
+            _buildSearchField(),
+            _buildCategoriesList(),
+            Expanded(child: _buildCocktailsList()),
+          ],
         ),
       ),
     );
@@ -60,7 +65,7 @@ class CocktailsFilterScreen extends StatelessWidget {
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(30.0)), borderSide: BorderSide.none),
                   filled: true,
-                  hintStyle: TextStyle(color: Colors.white),
+                  hintStyle: const TextStyle(color: Colors.white),
                   hintText: 'Search')),
         ));
   }
@@ -70,18 +75,22 @@ class CocktailsFilterScreen extends StatelessWidget {
       height: 70,
       child: Container(
         padding: const EdgeInsets.only(bottom: 16.0),
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: CocktailCategory.values.length,
-          itemBuilder: (context, index) {
-            return _buildCocktailCategoryItem(CocktailCategory.values.elementAt(index));
-          },
-        ),
+        child: ValueListenableBuilder(
+            valueListenable: _category,
+            builder: (context, value, child) {
+              return ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: CocktailCategory.values.length,
+                itemBuilder: (context, index) {
+                  return _buildCocktailCategoryItem(CocktailCategory.values.elementAt(index), value);
+                },
+              );
+            }),
       ),
     );
   }
 
-  Widget _buildCocktailCategoryItem(CocktailCategory category) {
+  Widget _buildCocktailCategoryItem(CocktailCategory category, CocktailCategory selected) {
     return Padding(
       padding: const EdgeInsets.all(5.0),
       child: GestureDetector(
@@ -89,13 +98,13 @@ class CocktailsFilterScreen extends StatelessWidget {
           decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(30.0)),
               border: Border.all(color: const Color(0xFF2D2C39), width: 1),
-              color: _category.value == category ? Color(0xFF3B3953) : Color(0xFF201F2C)),
+              color: selected.name == category.name ? Color(0xFF3B3953) : Color(0xFF201F2C)),
           child: Center(
             child: Padding(
               padding: const EdgeInsets.only(left: 18.0, right: 18.0, top: 10.0, bottom: 10.0),
               child: Text(
                 category.value,
-                style: TextStyle(color: Colors.white, fontSize: 15.0, fontWeight: FontWeight.w400),
+                style: const TextStyle(color: Colors.white, fontSize: 15.0, fontWeight: FontWeight.w400),
               ),
             ),
           ),
@@ -112,7 +121,7 @@ class CocktailsFilterScreen extends StatelessWidget {
       valueListenable: _category,
       builder: (context, value, child) {
         return FutureBuilder<Iterable<CocktailDefinition>>(
-            future: AsyncCocktailRepository().fetchCocktailsByCocktailCategory(_category.value),
+            future: AsyncCocktailRepository().fetchCocktailsByCocktailCategory(value),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting)
                 return _buildWaitingWidget();
@@ -219,7 +228,7 @@ class CocktailsFilterScreen extends StatelessWidget {
         ),
         Text(
           'Поиск...',
-          style: TextStyle(color: Colors.white, fontSize: 15.0, fontWeight: FontWeight.w400),
+          style: const TextStyle(color: Colors.white, fontSize: 15.0, fontWeight: FontWeight.w400),
         )
       ],
     );
@@ -229,7 +238,7 @@ class CocktailsFilterScreen extends StatelessWidget {
     return Center(
         child: Text(
       'Error: $error',
-      style: TextStyle(color: Colors.white, fontSize: 15.0, fontWeight: FontWeight.w400),
+      style: const TextStyle(color: Colors.white, fontSize: 15.0, fontWeight: FontWeight.w400),
     ));
   }
 }
