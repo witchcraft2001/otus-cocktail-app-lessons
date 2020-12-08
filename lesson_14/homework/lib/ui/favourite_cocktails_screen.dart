@@ -41,7 +41,7 @@ class FavouriteCocktailsScreen extends StatelessWidget {
               itemBuilder: (ctx, index) {
                 return GestureDetector(
                   onTap: () {
-                    _navigateToCocktailDetails(context, snapshot.data.elementAt(index).id);
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => CocktailDetailPage(repository, snapshot.data.elementAt(index).id)));
                   },
                   child: CocktailGridItem(snapshot.data.elementAt(index)),);
               },
@@ -50,10 +50,5 @@ class FavouriteCocktailsScreen extends StatelessWidget {
         return const SizedBox();
       },
     );
-  }
-
-  Future _navigateToCocktailDetails(BuildContext context, String id) async {
-    Cocktail cocktail = await repository.fetchCocktailDetails(id);
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) => CocktailDetailPage(cocktail)));
   }
 }

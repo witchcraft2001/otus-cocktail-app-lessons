@@ -2,15 +2,28 @@ import 'package:flutter/material.dart';
 import '../core/models.dart';
 
 class CocktailDetailPage extends StatelessWidget {
-  const CocktailDetailPage(
-      this.cocktail, {
-        Key key,
-      }) : super(key: key);
+  final AsyncCocktailRepository repository;
+  final String id;
 
-  final Cocktail cocktail;
+  const CocktailDetailPage(this.repository, this.id, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder<Cocktail>(
+        future: repository.fetchCocktailDetails(id),
+        builder: (ctx, snapshot) {
+          if (snapshot.hasError) {
+            return Center(child: Text(snapshot.error.toString()));
+          }
+
+          if (snapshot.hasData) {
+            return _buildDetailScreen(context, snapshot.data);
+          }
+          return Center(child: CircularProgressIndicator());
+        });
+  }
+
+  Widget _buildDetailScreen(BuildContext context, Cocktail cocktail) {
     return Material(
       child: SingleChildScrollView(
         child: Container(
@@ -18,10 +31,10 @@ class CocktailDetailPage extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
-              _buildToolbar(context),
-              _buildCocktailInfo(),
-              _buildCocktailIngredients(),
-              _buildCocktailInstruction(),
+              _buildToolbar(context, cocktail),
+              _buildCocktailInfo(cocktail),
+              _buildCocktailIngredients(cocktail),
+              _buildCocktailInstruction(cocktail),
               _buildRatingStars(),
             ],
           ),
@@ -30,7 +43,7 @@ class CocktailDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildToolbar(BuildContext context) {
+  Widget _buildToolbar(BuildContext context, Cocktail cocktail) {
     return Stack(
       fit: StackFit.loose,
       children: [
@@ -62,9 +75,7 @@ class CocktailDetailPage extends StatelessWidget {
     return Container(
         width: 48,
         height: 48,
-        decoration: BoxDecoration(
-            color: Color(0xFF2A293A),
-            borderRadius: BorderRadius.all(Radius.circular(24))),
+        decoration: BoxDecoration(color: Color(0xFF2A293A), borderRadius: BorderRadius.all(Radius.circular(24))),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Icon(
@@ -88,14 +99,10 @@ class CocktailDetailPage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
             child: Container(
-              decoration: BoxDecoration(
-                  color: Color(0xFF15151C),
-                  borderRadius: BorderRadius.all(Radius.circular(16))),
+              decoration: BoxDecoration(color: Color(0xFF15151C), borderRadius: BorderRadius.all(Radius.circular(16))),
               child: Padding(
-                padding: const EdgeInsets.only(
-                    left: 16.0, right: 16.0, top: 6.0, bottom: 6.0),
-                child: Text(value,
-                    style: TextStyle(color: Colors.white, fontSize: 15)),
+                padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 6.0, bottom: 6.0),
+                child: Text(value, style: TextStyle(color: Colors.white, fontSize: 15)),
               ),
             ),
           ),
@@ -110,10 +117,7 @@ class CocktailDetailPage extends StatelessWidget {
       child: Row(
         children: [
           Text(e.ingredientName,
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  decoration: TextDecoration.underline)),
+              style: TextStyle(color: Colors.white, fontSize: 14, decoration: TextDecoration.underline)),
           Spacer(flex: 1),
           Text(e.measure ?? "", style: TextStyle(color: Colors.white, fontSize: 14)),
         ],
@@ -121,7 +125,7 @@ class CocktailDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildCocktailInfo() {
+  Widget _buildCocktailInfo(Cocktail cocktail) {
     return Container(
       color: Color(0xFF1A1927),
       child: Padding(
@@ -137,9 +141,7 @@ class CocktailDetailPage extends StatelessWidget {
                 ),
                 Spacer(flex: 1),
                 Icon(
-                  cocktail.isFavourite
-                      ? Icons.favorite
-                      : Icons.favorite_border,
+                  cocktail.isFavourite ? Icons.favorite : Icons.favorite_border,
                   color: Colors.white,
                 )
               ],
@@ -148,14 +150,11 @@ class CocktailDetailPage extends StatelessWidget {
               padding: const EdgeInsets.only(top: 10.0),
               child: Text(
                 "Id:${cocktail.id ?? ""}",
-                style:
-                TextStyle(color: Color(0xff848396), fontSize: 13),
+                style: TextStyle(color: Color(0xff848396), fontSize: 13),
               ),
             ),
-            _buildCategoryWidget(
-                'Категория коктейля', cocktail.category.name),
-            _buildCategoryWidget(
-                'Тип коктейля', cocktail.cocktailType.name),
+            _buildCategoryWidget('Категория коктейля', cocktail.category.name),
+            _buildCategoryWidget('Тип коктейля', cocktail.cocktailType.name),
             _buildCategoryWidget('Тип стекла', cocktail.glassType.name),
           ],
         ),
@@ -163,22 +162,19 @@ class CocktailDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildCocktailInstruction() {
+  Widget _buildCocktailInstruction(Cocktail cocktail) {
     return Container(
       color: Color(0xFF201F2C),
       child: Padding(
-        padding: const EdgeInsets.only(
-            left: 26, right: 26, top: 24, bottom: 24),
+        padding: const EdgeInsets.only(left: 26, right: 26, top: 24, bottom: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 8, bottom: 24),
-              child: Text('Инструкция для приготовления:',
-                  style: TextStyle(color: Colors.white, fontSize: 14)),
+              child: Text('Инструкция для приготовления:', style: TextStyle(color: Colors.white, fontSize: 14)),
             ),
-            Text(cocktail.instruction,
-                style: TextStyle(color: Colors.white, fontSize: 14)),
+            Text(cocktail.instruction, style: TextStyle(color: Colors.white, fontSize: 14)),
           ],
         ),
       ),
@@ -189,8 +185,7 @@ class CocktailDetailPage extends StatelessWidget {
     return Container(
       color: Color(0xFF1A1927),
       child: Padding(
-        padding: const EdgeInsets.only(
-            left: 35.0, right: 35.0, top: 24.0, bottom: 24.0),
+        padding: const EdgeInsets.only(left: 35.0, right: 35.0, top: 24.0, bottom: 24.0),
         child: Flex(
             direction: Axis.horizontal,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -199,20 +194,17 @@ class CocktailDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildCocktailIngredients() {
+  Widget _buildCocktailIngredients(Cocktail cocktail) {
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.all(24.0),
-          child: Text('Ингредиенты:',
-              style: TextStyle(color: Colors.white, fontSize: 20)),
+          child: Text('Ингредиенты:', style: TextStyle(color: Colors.white, fontSize: 20)),
         ),
         Padding(
           padding: const EdgeInsets.only(bottom: 16.0),
           child: Column(
-            children: cocktail.ingredients
-                .map((e) => _wrapIngredient(e))
-                .toList(),
+            children: cocktail.ingredients.map((e) => _wrapIngredient(e)).toList(),
           ),
         )
       ],
